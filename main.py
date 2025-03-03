@@ -36,7 +36,7 @@ def train_test(df, epoch=20):
 
     model = LogisticRegression()
     model.fit(x_train_ct, y_train)
-    ypred = model.predict(x_test_ct)
+    y_pred = model.predict(x_test_ct)
 
     print('accuracy_score', accuracy_score(y_test, ypred))
     print('Confusion_matrix', confusion_matrix(y_test, ypred))

@@ -16,11 +16,14 @@ class Model:
         print('accuracy_score', accuracy_score(y_test, y_pred))
         print('Confusion_matrix', confusion_matrix(y_test, y_pred))
 
-    def get_model(self):
-        return self.model
+    def get_weight(self):
+        return self.model.coef_.flatten().tolist()
+
+    def get_bias(self):
+        return self.model.intercept_.tolist()
 
     def save_model(self):
-        pickle.dump(self.model, open('C:\\Users\\Richa\\PycharmProjects\\CECS-574---ZKML\\model.pkl', 'wb'))
+        pickle.dump(self.model, open('model.pkl', 'wb'))
 
     def load_model(self):
-        self.model = pickle.load(open('C:\\Users\Richa\\PycharmProjects\\CECS-574---ZKML\\model.pkl', 'rb'))
+        self.model = pickle.load(open('model.pkl', 'rb'))

@@ -1,52 +1,46 @@
-import kagglehub
-import numpy as np
-import pandas as pd
-from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler , OneHotEncoder
-from sklearn.metrics import accuracy_score, confusion_matrix
+import os
+from model import Model
+from dataset import Dataset
+import skl2onnx
+from skl2onnx.common.data_types import FloatTensorType
+import ezkl
 import warnings
 warnings.filterwarnings('ignore')
+ezkl.gen_settings("C:\\Users\\Richa\\PycharmProjects\\CECS-574---ZKML\\model.onnx")
 
-def download_dataset():
-    # Downloading Dataset
-    path = kagglehub.dataset_download("ankushpanday2/heart-attack-risk-and-prediction-dataset-in-india")
-    print("Path to dataset files:", path)
 
-    return path
+if __name__ == '__main__':
+    # Setting up dataset and model
+    dataset = Dataset()
 
-def train_test(df, epoch=20):
-    x = df.drop(columns=['Heart_Attack_Risk', 'Patient_ID'])
-    y = df['Heart_Attack_Risk']
+    x_train, x_test, y_train, y_test =  dataset.split_dataset()
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=2)
+    model = Model()
 
-    ct = ColumnTransformer(transformers=
-    [
-        ('onehot', OneHotEncoder(drop='first'), ['State_Name', 'Gender']),
-        ('normal', StandardScaler(),
-         ['Diastolic_BP', 'Annual_Income', 'Emergency_Response_Time', 'Systolic_BP', 'Cholesterol_Level',
-          'Triglyceride_Level', 'LDL_Level', 'HDL_Level'])
-    ], remainder='passthrough'
+    file_path = 'C:\\Users\\Richa\\PycharmProjects\\CECS-574---ZKML\model.pkl'
+
+    if not os.path.exists(file_path):
+        print('Saving New Model')
+        model.train(x_train, y_train)
+        model.test(x_test, y_test)
+        model.save_model()
+    else:
+        print('Loading Model')
+        model.load_model()
+        model.test(x_test, y_test)
+
+    # Converting to ONNX model
+    input_type = FloatTensorType([None, model.get_model().n_features_in_])
+
+    # onnx_model = skl2onnx.convert_sklearn(model.get_model(), initial_types=[("input", input_type)])
+    onnx_model = skl2onnx.convert_sklearn(
+        model.get_model(),
+        initial_types=[("input", input_type)],
+        target_opset=12  # Lower opset may improve compatibility
     )
 
-    x_train_ct = ct.fit_transform(x_train)
-    x_test_ct = ct.transform(x_test)
+    # Save ONNX model
+    with open("C:\\Users\\Richa\\PycharmProjects\\CECS-574---ZKML\\model.onnx", "wb") as f:
+        f.write(onnx_model.SerializeToString())
 
-    model = LogisticRegression()
-    model.fit(x_train_ct, y_train)
-    y_pred = model.predict(x_test_ct)
-
-    print('accuracy_score', accuracy_score(y_test, ypred))
-    print('Confusion_matrix', confusion_matrix(y_test, ypred))
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    path = download_dataset() + '\\heart_attack_prediction_india.csv'
-    df = pd.read_csv(path)
-
-    train_test(df)
-
-
+    print("Model successfully converted to ONNX format.")

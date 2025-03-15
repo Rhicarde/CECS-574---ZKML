@@ -1,9 +1,10 @@
 # Medical Privacy Preservation using ZKML
 
 ## Overview
-
+This project demonstrates the concept of Zero Knowledge Proofs and how it can be applied to machine learning models. In this project, we use EZKL in order to convert our logistic regression model into a ZKP circuit which can be used to create proofs on given input. 
 ## Features
-
+- Privacy-Perserving Machine Language: Ensure data remains private and localized, complying with health regulations
+- 
 ## Project Architecture
 ~(![image](https://github.com/user-attachments/assets/bf998093-8760-467a-8a13-7d5f6f446152)
 

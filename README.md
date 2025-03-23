@@ -9,6 +9,9 @@ This project demonstrates the concept of Zero Knowledge Proofs and how it can be
 ## Project Architecture
 ![image](https://github.com/user-attachments/assets/bf998093-8760-467a-8a13-7d5f6f446152)
 
+## Instructions
+To run the model, download the .ipynb file and run it on a notebook of your choice. Using Google Colab does make the process easier as you will not have to manually install the dependencies.
+
 ## System Requirements
 Project is done in a notebook so ensure that required libraries are installed.
 ### Dependencies
